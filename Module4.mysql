@@ -1,0 +1,55 @@
+VIEWS, ASSERTIONS & TRIGGERS
+
+- Consider the following view, DEPT_SUMMARY, defined on the COMPANY
+database in Figure 3.6:
+
+CREATE VIEW DEPT_SUMMARY (D, C, Total_s, Average_s)
+AS SELECT Dno, COUNT (*), SUM (Salary), AVG (Salary)
+FROM EMPLOYEE
+GROUP BY Dno;
+
+State which of the following queries and updates would be allowed on the
+view. If a query or update would be allowed, show what the corresponding
+query or update on the base relations would look like, and give its result
+when applied to the database in Figure 3.6.
+
+Since a view table is only able to Alter and Select statements instead of Deleting or Updating them, only options a, b, and c are allowed on the Dept_Summary view.
+
+a. SELECT *
+FROM DEPT_SUMMARY;
+
+Ans: Allowed. 
+
+
+
+b. SELECT D, C
+FROM DEPT_SUMMARY
+WHERE TOTAL_S > 100000;
+
+Ans: Allowed
+
+
+
+c. SELECT D, AVERAGE_S
+FROM DEPT_SUMMARY
+WHERE C > ( SELECT C FROM DEPT_SUMMARY WHERE D=4);
+
+Ans: Allowed
+
+
+
+d. UPDATE DEPT_SUMMARY
+SET D=3
+WHERE D=4;
+
+Ans: Not Allowed. We get an error code [Error Code: 1288. The target table DEPT_SUMMARY of the UPDATE is not updatable].
+
+e. DELETE FROM DEPT_SUMMARY
+WHERE C > 4;
+
+Ans: Not Allowed. We get an error code [Error Code: 1288. The target table DEPT_SUMMARY of the DELETE is not updatable].
+ 
+
+
+
+
