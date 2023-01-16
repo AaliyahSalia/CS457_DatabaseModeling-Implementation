@@ -1,0 +1,471 @@
+Creating a Normalized Relational Model for Friendly car system
+Step 6.1 Begin with the list of the tables that the entities and relationships from the ER diagram mapped to naturally, from the sample project section at the end of chapter 4. For each table on the list, identify functional dependencies and normalize the relation to BCNF. Then decide whether the resulting tables should be implemented in that form. If not, explain why.
+Cars: carID, type/Model, color, seriesNumber, year, fuelType, price, city, state, currentMileage, annualFuelCost, carCategory, carCondition, complimentaryProgram, finalPrice, greenhouseGasRating, horsePower, modelName, seats, brand
+
+Zips(zip, city, state)
+
+Functional Dependencies:
+carID->All Attributes
+areaCode + telephoneNumber → street, city, state, zip
+zip → city, state
+
+Customer: custID, name(first,last), Address(street,city,state,zip), PhoneNumber (areacode, telephone number), email, Gender, annual_Income, birthdate
+
+Functional Dependencies:
+zip → city, state
+areaCode + telephoneNumber → street, city, state, zip
+	custID → all attributes
+
+Employee:EmpID,name(first,last),Address(street,city,state,zip), PhoneNumber(areacode, telephone number), email, Gender, salary, dateOfJoining, department, SSN
+
+Functional Dependencies:
+EmpID → All attributes 
+Department → (dateOfJoining, salary)
+
+SalesPerson: EmpID(fk), name(first,last), commissionRate, numberofCarSold, targetAmount, targetAchieved, salesYear, year_experiance,SSN
+
+Functional Dependencies:
+EmpID → (commisionRate, numberofCarSold, targetAmound, targetAchieved, SSN)
+
+SalesInvoice: invoiceID, custID(fk), EmpID(fk), insuranceID(fk), finalPrice, invoiceDate
+
+Functional Dependencies:
+InvoiceID → (finalPrince, invoiceDate)
+
+Showroom: name, address(street,city,state,zip), branches, no_of_employee, carCategory,
+
+Functional Dependencies:
+zip → city, state
+	Branches → (no_of_employees, carCategory)
+
+Insurance: insuranceID, carID(fk), policyNumber, insuranceCompany, insuranceValidity, registrationDate, warrantyInformation, city, State, vehicleRegistrationFee
+
+Functional Dependencies:
+InsuranceID → All attributes
+policyNumber → insuranceCompany, insuranceValidity
+
+Tax: taxID, totalTax, customerTaxID
+
+Functional Dependencies:
+taxID → (totalTax, customerTaxID)
+
+Survey: surveyID, surveyDate, custID(fk), rateCar, rateDelarship, rateSalesperson
+
+	surveyID → All attributes
+
+Step 6.2 Update the data dictionary and list of assumptions as needed.
+No additional fields are required for the database
+Step 6.3 For each table, write the table name and write out the names, data types, and sizes of all the data items, Identify any constraints, using the conventions of the DBMS you will use for implementation.
+TABLE  Zips
+ 
+Item	Datatype	Size	Constraints	Comments
+Zip	CHAR		10	PRIMARY KEY
+city 	VARCHAR2	15	NOT NULL 
+state 	CHAR		2	NOT NULL
+ 
+Table customer
+
+custID 		char	      	9	PRIMARY KEY
+lastName	VARCHAR2 	20	NOT NULL
+firstName	VARCHAR2 	15	NOT NULL
+Street		VARCHAR2  	50 
+Zip		CHAR		5 	FOREIGN KEY REF Zips
+Areacode 	int
+telephone_number int
+Email		VARCHAR2	50
+Gender		CHAR		9
+annual_Income	NUMBER	8.2	DEFAULT 0.00
+Birthdate	DATE
+
+TABLE EMPLOYEE
+
+empID 		char	      	9	PRIMARY KEY
+lastName	VARCHAR2 	20	NOT NULL 
+firstName	VARCHAR2 	15	NOT NULL 
+Street		VARCHAR2  	50 
+Zip		CHAR		5 	FOREIGN KEY REF Zips
+Areacode 	int		 
+telephone_number int
+Email		VARCHAR2	50
+Gender		CHAR		9
+Salary		NUMBER	8.2	DEFAULT 0.00
+dateOfJoining	DATE
+department 	VARCHAR2	15
+SSN		CHAR 		9	UNIQUE
+
+Table Showroom
+name   
+ VARCHAR  20    NOT NULL PRIMARY KEY
+street   
+ VARCHAR  50
+zip       
+ CHAR          5      FOREIGN KEY REF Zips
+branches 
+ INT                      NOT NULL PRIMARY KEY
+no_of_employee 
+ INT
+carCategory 
+ VARCHAR  50 
+
+Table Survey 
+surveyID 
+INT                 NOT NULL PRIMARY KEY
+surveyDate 
+Date,
+custID 
+INT                  FOREIGN KEY
+rateCar 
+VARCHAR 50
+rateDelarship 
+VARCHAR 50
+rateSalesperson 
+VARCHAR 50
+
+
+
+
+Table Car
+
+carID                INT             UNSIGNED          NOT NULL	PRIMARY KEY
+
+color                  VARCHAR(20)
+
+seriesNumber             INT
+
+Caryear                       INT
+
+fuelType            VARCHAR(20)
+price                  MEDIUMINT                UNSIGNED
+
+city                    VARCHAR(50)
+
+state 		VARCHAR(50)
+
+currentMileage 		INT 		UNSIGNED
+
+annualFuelCost 		MEDIUMINT 		UNSIGNED
+
+carCategory 		VARCHAR(20)
+
+carCondition 		VARCHAR(20)
+
+complimentaryProgram 		VARCHAR(50),
+
+horsePower 		INT
+
+modelName 		VARCHAR(50)
+
+Seats		 INT
+
+brand 		VARCHAR(50)
+
+
+CREATE TABLE Insurance 
+
+InsuranceID 	INT 	UNSIGNED 	NOT NULL	PRIMARY KEY
+
+carID 	INT 	UNSIGNED 	NOT NULL	FOREIGN KEY
+
+policyNumber 	INT 	UNSIGNED
+
+insuranceCompany 	VARCHAR(50)
+
+insuranceValidity 	DATE
+
+registrationDate 	DATE
+
+city 	VARCHAR(20)
+
+state 	VARCHAR(20)
+
+vehicleRegistrationFee 	INT
+
+
+CREATE TABLE Tax
+
+totalTax 	BIGINT 	UNSIGNED
+
+customerTaxID 	INT 	NOT NULL	PRIMARY KEY
+
+
+Step 6.4 Write and execute SQL statements to create all the tables needed to implement the design.
+CREATE TABLE CUSTOMER(
+custID 		char(9),	
+lastName	VARCHAR2 (20) NOT NULL, 
+firstName	VARCHAR2 (15) NOT NULL,	
+Street		VARCHAR2  (50), 
+Zip		int, 
+Areacode 	int, 
+telephone_number int,  
+Email		VARCHAR2(50),
+Gender		CHAR(9),
+annual_Income	NUMBER(8,2)	DEFAULT 0.00,
+Birthdate	DATE,
+PRIMARY KEY(custID),
+FOREIGN KEY fk_zip(Zip) REFERENCES Zip(Zip));
+
+
+CREATE TABLE EMPLOYEE(
+empID 		char(9),	
+lastName	VARCHAR2 (20) NOT NULL, 
+firstName	VARCHAR2 (15) NOT NULL,	
+Street		VARCHAR2  (50), 
+Zip		int, 
+Areacode 	int, 
+telephone_number int,  
+Email		VARCHAR2(50),
+Gender		CHAR(9),
+Salary 		NUMBER(8,2)	DEFAULT 0.00,
+dateOfJoining	DATE,
+Department 	VARCHAR2(15),
+SSN		CHAR(9) UNIQUE,
+PRIMARY KEY(empID)
+FOREIGN KEY fk_zip(Zip) REFERENCES Zip(Zip));
+
+CREATE TABLE Car(
+carID INT UNSIGNED NOT NULL,
+color VARCHAR(20),
+seriesNumber INT,
+Caryear INT,
+fuelType VARCHAR(20),
+price MEDIUMINT UNSIGNED,
+city VARCHAR(50),
+state VARCHAR(50),
+currentMileage INT UNSIGNED,
+annualFuelCost MEDIUMINT UNSIGNED,
+carCategory VARCHAR(20),
+carCondition VARCHAR(20),
+complimentaryProgram VARCHAR(50),
+horsePower INT,
+modelName VARCHAR(50),
+seats INT,
+brand VARCHAR(50),
+PRIMARY KEY (carID));
+
+CREATE TABLE Zip(
+city 		VARCHAR2(15), 
+state 		CHAR(2),
+zip		 INT
+PRIMARY KEY (Zip));
+
+
+
+CREATE TABLE Insurance(
+InsuranceID INT UNSIGNED NOT NULL,
+carID INT UNSIGNED NOT NULL,
+policyNumber INT UNSIGNED,
+insuranceCompany VARCHAR(50),
+insuranceValidity DATE,
+registrationDate DATE,
+city VARCHAR(20),
+state VARCHAR(20),
+vehicleRegistrationFee INT,
+PRIMARY KEY(InsuranceID),
+FOREIGN KEY fk_car(carID) REFERENCES Car(carID));
+
+CREATE TABLE Tax(
+totalTax BIGINT UNSIGNED,
+customerTaxID INT NOT NULL,
+PRIMARY KEY(customerTaxID));
+
+CREATE TABLE Showroom(
+name VARCHAR(20) UNSIGNED NOT NULL,
+street VARCHAR(50),
+zip int,
+branches INT UNSIGNED NOT NULL,
+no_of_employee INT
+carCategory VARCHAR(50)
+PRIMARY KEY(name,branches),
+FOREIGN KEY fk_zip(Zip) REFERENCES Zip(Zip)));
+
+CREATE TABLE Survey(
+surveyID int UNSIGNED NOT NULL,
+surveyDate date,
+custID int,
+rateCar VARCHAR(50),
+rateDelarship VARCHAR(50),
+rateSalesperson VARCHAR(50)
+PRIMARY KEY(surveyID)
+FOREIGN KEY (custID) REFERENCES Customer(custID));
+
+Create table SalesPerson(
+EmpId CHAR(9),
+firstName VARCHAR(20) NOT NULL, 
+lastName VARCHAR(15) NOT NULL,
+commissionRate NUMBER(3,2),
+numberOfCarSold INTEGER,
+targetAmount INTEGER,
+targetAchieved INTEGER,
+salesYear INTEGER,
+yearsExperience INTEGER,
+SSN VARCHAR2(15),
+PRIMARY KEY(EmpId),
+FOREIGN KEY(EmpId) REFERENCES
+Employee(EmpId)
+);
+
+Create table SalesInvoice(
+carID INT UNSIGNED NOT NULL,
+invoiceId INT,
+custId CHAR(9),
+EmpId CHAR(9),
+insuranceId INT,
+finalPrice INT,
+invoiceDate DATE,
+FOREIGN KEY(custId) REFERENCES Customer(custId),
+FOREIGN KEY(EmpId) REFERENCES Employee(EmpId),
+FOREIGN KEY(insuranceId) REFERENCES Insurance(insuranceId)
+);
+
+Step 6.5 Create indexes for foreign keys and other columns that will often be used for queries.
+Create UNIQUE INDEX car_id on Car(carCategory ,carCondition);
+Create INDEX idx_custname ON Customer (lastName, firstName);
+Create INDEX idx_empname ON Employee (lastName, firstName);
+Create UNIQUE  INDEX idx_empssn ON Employee (SSN);
+Create INDEX idx_showroom ON Showroom(carCategory);
+Create INDEX idx_salesperson ON SalesPerson(lastName, firstName);
+Create  UNIQUE INDEX idx_salesssn ON SalesPerson(SSN);
+Create INDEX idx_salesinvoice  ON SalesInvoice(invoiceDate);
+Create INDEX idx_Insurance ON Insurance(insuranceValidity);
+Create INDEX idx_Cust_zip ON Customer(Zip)
+Create INDEX idx_survey on Survey(surveyDate)
+ 
+ 
+Step 6.6 Insert about five records in each table, preserving all constraints. Put in enough data to demonstrate how the database will function.
+Zips:
+INSERT INTO Zips VALUES('95050', 'santa clara', 'CA');
+INSERT INTO Zips VALUES('95091',  'fremont', 'CA'');
+INSERT INTO Zips VALUES('95090','san jose', 'CA');
+INSERT INTO Zips VALUES(‘95055’, 'milpitas', 'CA',); 
+INSERT INTO Zips VALUES(’94560’,  'newark', 'CA',);
+ 
+Customer:
+
+insert into customer values('1','dhyani','kruti','231 main street', 90090, 213, 222221, 'kdhyani@gmail.com','female',234560.00,'10/22/1991');
+
+insert into customer values('2','shah','Jesal','321 alpha street', 95050, 399, 123221, 'jshah@gmail.com', 'female', 134560.00,'08/02/1989');
+
+insert into customer values('3','SALIA','aaliyah','2244 beta street', 95053, 399, 129934, 'asalia@gmail.com','female',144560.00,'09/12/1995');
+
+insert into customer values('4','iyer','nikhil','787 albany street', 95055, 399, 399912, 'niyer@gmail.com','male',94560.00,'01/09/1997');
+
+insert into customer values('5','iyer','ankush','787 albany street', 95055, 399, 399811, 'aiyer@gmail.com','male',74560.00,'03/19/1997');
+
+Employee:
+
+insert into employee values('101','bhatt','ashish','231 beta street', 90090, 213, 888821, 'bashish@gmail.com','male',64560.00,'10/21/1978','Account',989898989);
+
+insert into employee values('201','li','peng','7311 santana row', 95050, 213, 458821, 'pli@gmail.com','male',44560.00,'03/12/1988','sales',989845673);
+
+insert into employee values('301','johan','nick','9321 more avenue', 95091, 399, 324821, 'njohan@gmail.com','male',34550.00,'05/21/1998','marketing',123498989);
+
+insert into employee values('102','bush','michel','3431 parle point', 95090, 213, 456821, 'mbush@gmail.com','female',44560.00,'06/21/2001','Account',324521989);
+
+insert into employee values('202','fedric','maria','7676 saratoga avenue', 95041, 399, 345678, 'mfedric@gmail.com','female',49960.00,'05/05/2019','sales',654354673)
+Car:
+
+INSERT INTO Car(carID, color, seriesNumber, Caryear, fuelType, price, city, state, currentMileage, annualFuelCost, carCategory, carCondition, complimentaryProgram, horsePower, modelName, seats, brand) VALUES
+
+(123, 'Yellow', 1092, 1999, 'Petrol', 12300000, 'Fremont', 'California', 1000, 2000, 'Sedan', 'New', 'Yes', 200, 'X-Series', 4, 'Bugatti')
+
+(321, 'Blue', 1832, 2000, 'Diesel', 16000, 'Santa Clara', 'California', 12000, 1500, 'Hatchback', 'Used', 'No', 250, 'Acadia', 5, 'GMC'),
+
+(156, 'Red', 1980, 2000, 'Petrol', 17000, 'Milpitas', 'California', 13000, 1600, 'SUV', 'New', 'Yes', 300, 'Escalade', 8, 'Cadillac'),
+
+(890, 'Black', 1870, 2005, 'Hybrid', 20877, 'San Diego', 'California', 15000, 1400, 'SUV', 'New', 'No', 400, 'RX', 5, 'Lexus'),
+
+(489, 'Grey', 1789, 2020, 'Petrol', 30090, 'Los Angeles', 'California', 24000, 1500, 'Sedan', 'New', 'Yes', 450, 'Model 3', 5, 'Tesla');
+
+Insurance:
+
+INSERT INTO Insurance(InsuranceID, carID, policyNumber, insuranceCompany, insuranceValidity, registrationDate, city, state, vehicleRegistrationFee) VALUES
+
+(15678, 321, 7595527338, 'Geico', '2026-10-01', '2022-05-10', 'Fremont', 'California', 45),
+(13658, 156,7971753493,'AAA Norcal','2027-09-13','2021-06-12', 'Santa Clara', 'California', 45),
+(52344, 890,5299320038,'Progressive', '2024-08-14', '2020-05-16', 'Santa Clara', 'California', 45),
+(82584, 489, 7860495043, 'Mercury', '2025-10-20', '2021-02-01', 'Fremont', 'California', 45),
+(67762, 123, 1760952282, 'Geico', '2026-03-17', '2019-07-23', 'San Diego', 'California', 50);
+
+Tax:
+
+INSERT INTO Tax(totalTax, customerTaxID) VALUES
+(1500 ,12345678912),
+(1400 ,5336534143),
+(2000,4110916832),
+(3500, 8848225733),
+(5300, 6397352035);
+
+Showroom:
+
+Insert into Showroom values ('Honda', '550 Avenue Street',’'94560',2,50, 'Sedan')
+Insert into Showroom values ('Hyundai, '582 Jew Street','94560',2,100, 'Sports Car')
+Insert into Showroom values ('Tesla', '3421 Santana point avenue’,'94560',8,10, 'SUV')
+Insert into Showroom values ('BMW' '758 Albany Street','94560',1,25, 'Crossover')
+Insert into Showroom values ('Toyota', '128 Cross street','94560',1,5, 'Sedan')
+ 
+Survey:
+
+Insert into Survey values (1, 12-20-2022, 1 ,'Highly Satisfied,' Below Average,' Average')
+Insert into Survey values (2, 10-10-2022, 2 ,'Good',' Below Average,' Average')
+Insert into Survey values (3, 11-15-2022, 3 ,'Good',' Below Average,' Good)
+Insert into Survey values (4, 05-15-2022, 4 ,'Good',' Below Average,' Average')
+Insert into Survey values (5, 08-18-2022, 5 ,'Highly Satisfied,' Below Average,' Average')
+
+SalesPerson :
+
+Insert into SalesPerson values(‘101’,”vivek”,”pagidi”,0.02,10,20000,15000,2018,12,”987643672”);
+
+Insert into SalesPerson values(‘201’,”Li”,”peng”,0.03,20,30000,16000,2019,14,”587673672”);
+
+Insert into SalesPerson values(‘202’,'fedric','maria',0.04,30,40000,17000,2020,15,”787683672”);
+Insert into SalesPerson values(‘104’,”poulo”,”dybala”,0.05,40,50000,18000,2021,17,”087653672”);
+
+Insert into SalesPerson values(‘105’,”antonie”,”Griezmann”,’0.06’,50,60000,19000,2022,19,”187646672”);
+
+SalesInvoice :
+
+Insert into SalesInvoice values(‘123’,101010,’1’,’101’,15678,2000,’15/06/2018’);
+Insert into SalesInvoice values(‘321’,103410,’2’,’201’,13658,3000,’17/02/2019’);
+Insert into SalesInvoice values(‘423’,451010,’3’,’202’,52344,4000,’20/02/2020’);
+Insert into SalesInvoice values(‘432’,981010,’6’,’200’,82584,5000,’28/02/2021’);
+Insert into SalesInvoice values(‘941’,341010,’7’,’300’,67762,6000,’23/02/2022’);
+ 
+Step 6.7 Write SQL statements that will process five non-routine requests for information from the database just created. For each, write the request in English, followed by the corresponding SQL command.
+1. displays total salary  & commission rate paid to employees working in each department.
+
+Ans: select sum(e.salary) as TotalSalary, s.commissionrate, e.department from employee e
+join salesperson s
+on e.empid = s.empid
+group by e.department , s.commissionrate
+
+2. Select modelName, brand, carYear, InsuranceValidity, registrationDate of the vehicle using Inner Join.
+
+Ans: SELECT modelName, brand, carYear, InsuranceValidity, registrationDate
+FROM Insurance
+INNER JOIN Car
+ON Insurance.carID = Car.carID;
+
+3. Select all the employee names whose department is sales.
+
+Ans:  select firstname, lastname from employee where department ='sales';
+
+4. Display Final salary of salesperson after adding commission to base salary.
+
+Ans: SELECT * 
+         	FROM employees e 
+	WHERE salary + commissionRate  IN
+	(SELECT salary + commissionRate AS totalSalary
+	FROM employees e, salesperson sp
+	WHERE e.emp_id = sp.emp_id;
+       
+5. Display all the vehicle delivered in the year of 2020 including delivery date, CusID, Salesperson name, final price, model name and car manufacturer year
+
+Ans: Select SalesInvoice.invoiceDate as Delivered_Date, SalesInvoice.custId, SalesInvoice.empId as SalesPerson_name, SalesInvoice.finalPrice, car.modelName, car.Caryear as manufacture_year
+From SalesInvoice, car
+Where SalesInvoice.invoiceDate >= 01-01-2020 and SalesInvoice.invoiceDate <=12-31-2020
+
+ 
+ 
+ 
+ 
+
